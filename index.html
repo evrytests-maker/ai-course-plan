@@ -1,0 +1,1301 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тарифы AI-курса</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,400&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap&subset=cyrillic">
+<style>
+/* Layout: ivory, много воздуха; герой → три карточки тарифов с раскрывающимися модулями → «В каждой подписке» */
+:root{
+  --bg:#FAF9F5; --card:#F3F1EA; --raised:#FFFFFF; --line:#E6E3D9; --line-strong:#CFCBBE;
+  --fg:#141413; --muted:#6B6A64; --faint:#9A978E;
+  --clay:#D97757; --clay-soft:#D9775714;
+  --soft:cubic-bezier(.45,0,.15,1); --fold:.5s;
+  --f-serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-sans:"Inter Tight", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1A1918; --card:#22211F; --raised:#262523; --line:#2F2D2A; --line-strong:#45423D;
+  --fg:#F3F1EA; --muted:#A6A398; --faint:#7D7A72; --clay:#E08A6B; --clay-soft:#E08A6B1A; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#1A1918; --card:#22211F; --raised:#262523; --line:#2F2D2A; --line-strong:#45423D;
+  --fg:#F3F1EA; --muted:#A6A398; --faint:#7D7A72; --clay:#E08A6B; --clay-soft:#E08A6B1A; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;padding-inline:20px;padding-block:0 80px}
+.wrap{max-width:1260px;margin-inline:auto}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+button:focus-visible{outline:2px solid var(--clay);outline-offset:3px;border-radius:8px}
+
+/* анимации */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.in{animation:rise var(--fold) var(--soft) both;animation-delay:calc(var(--d,0) * 60ms)}
+
+
+/* герой */
+.hero{padding-block:56px 56px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px}
+h1{font-family:var(--f-serif);font-weight:300;font-size:clamp(40px,7vw,76px);line-height:1.02;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1 em{font-style:italic;font-weight:400}
+.lead{margin:0;color:var(--muted);font-size:17px;max-width:44ch}
+
+/* тарифы */
+.tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,4.4vw,64px);align-items:start}
+@media (max-width:980px){.tiers{grid-template-columns:minmax(0,1fr);max-width:560px;margin-inline:auto}}
+.tier{position:relative;isolation:isolate;padding:28px 24px 18px;display:flex;flex-direction:column;gap:18px;min-width:0;transition:transform var(--fold) var(--soft)}
+.tier::before{content:"";position:absolute;inset:0 0 calc(-1 * var(--extra, 0px)) 0;z-index:-1;background:var(--card);border:1px solid transparent;border-radius:22px;transform-origin:50% 0;transition:border-color var(--fold) var(--soft), background var(--fold) var(--soft)}
+@media (hover:hover){.tier:hover{transform:translateY(-4px)}.tier:hover::before{border-color:var(--line-strong)}}
+.tier.feat::before{background:var(--raised);border-color:var(--line)}
+.tier-top{display:flex;flex-direction:column;gap:6px}
+.tier-name{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.tier h2{font-family:var(--f-serif);font-weight:400;font-size:36px;letter-spacing:-.02em;margin:0;line-height:1}
+.count{font-family:var(--f-mono);font-size:11px;color:var(--faint);white-space:nowrap}
+.tagline{margin:0;font-size:15px}
+.fmt{margin:0;color:var(--muted);font-size:13.5px}
+.incl{font-size:13px;color:var(--muted);padding-top:16px;border-top:1px solid var(--line);margin:0}
+
+/* модули */
+.mods{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.mod{position:relative}
+.mod::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--line);transform-origin:0 0}
+.mod:last-child::after{display:none}
+.mod-h{width:100%;display:flex;gap:14px;align-items:flex-start;padding:13px 2px;border-radius:10px}
+@media (hover:hover){.mod-h:hover .mod-txt{transform:translateX(6px)}}
+.mod-h.focus .mod-txt{transform:translateX(6px)}
+.mod-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;transition:transform var(--fold) var(--soft)}
+.mod-name{font-weight:500;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mod-desc{display:grid;grid-template-rows:1fr;color:var(--muted);font-size:13.5px;line-height:1.45}
+.mod-desc > span{overflow:hidden}
+.beta{font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--clay);border:1px solid var(--clay);border-radius:99px;padding:0 7px;line-height:17px}
+.plus{flex:none;width:22px;height:22px;margin-top:1px;border-radius:50%;border:1px solid var(--line-strong);position:relative;transition:transform var(--fold) var(--soft), background var(--fold) var(--soft), border-color var(--fold) var(--soft)}
+.plus::before,.plus::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:1.5px;background:var(--fg);transform:translate(-50%,-50%);transition:background var(--fold) var(--soft)}
+.plus::after{transform:translate(-50%,-50%) rotate(90deg)}
+@media (hover:hover){.mod-h:hover .plus{border-color:var(--fg)}}
+.mod-h.focus .plus{border-color:var(--fg)}
+.mod.open .plus{transform:rotate(135deg);background:var(--fg);border-color:var(--fg)}
+.mod.open .plus::before,.mod.open .plus::after{background:var(--bg)}
+.body{display:grid;grid-template-rows:0fr}
+.mod.open .body{grid-template-rows:1fr}
+.body > div{overflow:hidden}
+.topics{list-style:none;margin:0;padding:2px 2px 16px;display:flex;flex-direction:column;gap:12px}
+.topic{position:relative;z-index:calc(20 - var(--i));display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;opacity:0;transform:translateY(-14px);transition:opacity var(--fold) var(--soft), transform var(--fold) var(--soft)}
+.mod.open .topic{opacity:1;transform:none;transition-delay:calc(var(--i) * 40ms)}
+.topic .num{font-family:var(--f-mono);font-size:11px;line-height:19px;color:var(--faint);transition:color var(--fold) var(--soft)}
+@media (hover:hover){.topic:hover .num{color:var(--clay)}}
+.topic.focus .num{color:var(--clay)}
+.topic > div{transition:transform var(--fold) var(--soft)}
+.topic.focus > div{transform:translateX(4px)}
+.topic b{display:block;font-weight:500;font-size:14px;line-height:1.35}
+.topic span{display:block;color:var(--muted);font-size:13px;line-height:1.45;margin-top:2px}
+
+/* ПК: карточки выше */
+@media (min-width:981px){
+  /* при открытии модуля остальные складываются до одной строки, темы видны целиком */
+  .mods.has-open .mod:not(.open) .mod-h{padding-block:7px}
+  .mods.has-open .mod:not(.open) .mod-desc{grid-template-rows:0fr;opacity:0}
+  /* --dz от 0 до 1: насколько плотнее отступы в невысоком окне (вкладки, панели браузера).
+     Подбирается fitScreen() ровно под высоту окна, весь текст остаётся */
+  .hero{padding-block:calc(48px - 26px * var(--dz,0)) calc(40px - 16px * var(--dz,0));gap:calc(12px - 4px * var(--dz,0))}
+  h1{font-size:calc(clamp(40px,4.6vw,60px) - (clamp(40px,4.6vw,60px) - clamp(36px,3.8vw,52px)) * var(--dz,0))}
+  .lead{font-size:calc(16px - 1px * var(--dz,0))}
+  .trip-btn{margin-top:calc(10px - 6px * var(--dz,0));height:calc(54px - 6px * var(--dz,0))}
+  .tier{padding:calc(28px - 8px * var(--dz,0)) calc(24px - 2px * var(--dz,0)) calc(18px - 6px * var(--dz,0));gap:calc(18px - 6px * var(--dz,0))}
+  .tier-top{gap:calc(6px - 2px * var(--dz,0))}
+  .incl{padding-top:calc(16px - 6px * var(--dz,0))}
+  .mod-h{padding-block:calc(13px - 5px * var(--dz,0))}
+  .topics{gap:calc(12px - 3px * var(--dz,0));padding-bottom:calc(16px - 4px * var(--dz,0))}
+  footer{padding-top:calc(80px - 40px * var(--dz,0))}
+}
+/* оставшееся уменьшение — масштабом страницы, его задаёт fitScreen() */
+.wrap{zoom:var(--fit,1)}
+
+/* в каждой подписке: последний модуль в списке, выделен терракотовым */
+.mod.perk .mod-name{color:var(--clay)}
+.mod.perk .plus{border-color:var(--clay)}
+.mod.perk .plus::before,.mod.perk .plus::after{background:var(--clay)}
+.mod.perk.open .plus{background:var(--clay);border-color:var(--clay)}
+.mod.perk.open .plus::before,.mod.perk.open .plus::after{background:var(--bg)}
+.mod.perk .num{color:var(--clay)}
+
+/* «всё из предыдущего тарифа» */
+.inherit{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--clay);background:var(--clay-soft);border:1px solid color-mix(in srgb,var(--clay) 40%,transparent);border-radius:99px;padding:3px 11px 3px 9px}
+.inherit::before{content:"+";font-weight:600}
+
+footer{padding-top:80px;text-align:center;color:var(--faint);font-size:12.5px}
+/* дорога курса: весь курс — один путь Lite → Pro → Business */
+.trip-btn{display:inline-flex;align-items:center;gap:12px;margin-top:10px;height:54px;padding:0 26px 0 10px;border-radius:99px;background:var(--fg);color:var(--bg);font-size:15px;font-weight:500;box-shadow:0 18px 40px -22px var(--fg);transition:transform var(--fold) var(--soft), background var(--fold) var(--soft)}
+.trip-btn .tri,.path-btn .tri{border-radius:50%;background:var(--clay);display:grid;place-items:center;flex:none}
+.trip-btn .tri{width:36px;height:36px}
+.trip-btn .tri::before{content:"";margin-left:3px;border-left:11px solid #fff;border-top:7px solid transparent;border-bottom:7px solid transparent}
+@media (hover:hover){.trip-btn:hover{transform:translateY(-2px) scale(1.02);background:var(--clay)}.trip-btn:hover .tri{background:var(--fg)}}
+.path-btn{align-self:flex-start;margin-top:4px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:99px;background:var(--fg);color:var(--bg);font-size:13px;font-weight:500;transition:transform var(--fold) var(--soft), background var(--fold) var(--soft)}
+.path-btn .tri{width:18px;height:18px}
+.path-btn .tri::before{content:"";margin-left:2px;border-left:6px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent}
+@media (hover:hover){.path-btn:hover{transform:translateY(-2px);background:var(--clay)}.path-btn:hover .tri{background:var(--fg)}}
+
+[hidden]{display:none!important}
+.wrap{transition:transform .7s var(--soft), opacity .5s var(--soft), filter .7s var(--soft), visibility 0s}
+/* под открытой дорогой страница после ухода скрыта совсем и не рисуется */
+html.trip-open .wrap{transform:scale(.94);opacity:0;filter:blur(8px);visibility:hidden;transition:transform .7s var(--soft), opacity .5s var(--soft), filter .7s var(--soft), visibility 0s .7s}
+#trip{position:fixed;inset:0;z-index:100;background:linear-gradient(180deg,var(--tg,var(--bg)),var(--bg) 55%);color:var(--fg);overflow:hidden;opacity:0;transition:opacity .6s var(--soft);touch-action:none;user-select:none;-webkit-user-select:none}
+#trip.show{opacity:1}
+#trip canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* подписи меток и ворот, их ставит скрипт по проекции */
+#trip .t-labs{position:absolute;inset:0;pointer-events:none}
+#trip .t-lab{position:absolute;left:0;top:0;text-align:center;white-space:nowrap;opacity:0;will-change:transform,opacity;transition:opacity .3s var(--soft)}
+#trip .t-lab b{display:block;font-family:var(--f-mono);font-weight:400;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--c);text-shadow:0 0 8px var(--bg),0 0 2px var(--bg)}
+#trip .t-lab span{display:block;font-family:var(--f-serif);font-size:17px;letter-spacing:-.01em;color:var(--fg);text-shadow:0 1px 12px var(--bg),0 0 2px var(--bg)}
+#trip .t-lab.on span{font-size:22px}
+#trip .t-lab.gate{pointer-events:auto;cursor:pointer}
+#trip .t-lab.gate span{font-size:30px;font-style:italic}
+#trip .t-lab.gate b{font-size:11px}
+
+/* верх: назад, прогресс по трём уровням, счётчик */
+#trip .t-top{position:absolute;left:0;right:0;top:0;z-index:4;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:20px;padding:calc(20px + env(safe-area-inset-top,0px)) clamp(16px,3vw,40px) 0;transition:opacity .5s var(--soft)}
+#trip .t-back{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px 0 12px;border-radius:99px;border:1px solid var(--line-strong);font-size:13.5px;font-weight:500;background:var(--bg)}
+#trip .t-prog{display:flex;gap:6px;max-width:560px;width:100%;justify-self:center}
+#trip .t-seg{flex:var(--w) 1 0;display:flex;flex-direction:column;gap:6px;min-width:0;cursor:pointer}
+#trip .t-seg .bar{height:4px;border-radius:99px;background:var(--line);overflow:hidden}
+#trip .t-seg .bar i{display:block;height:100%;width:var(--f,0%);background:var(--c);border-radius:99px}
+#trip .t-seg span{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);transition:color .4s}
+#trip .t-seg.on span{color:var(--c)}
+#trip .t-count{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right;min-width:86px}
+
+/* карточка текущей остановки */
+#trip .t-card{position:absolute;left:clamp(16px,4vw,56px);bottom:calc(clamp(20px,5vh,52px) + env(safe-area-inset-bottom,0px));z-index:3;width:min(420px,calc(100vw - 32px));display:flex;flex-direction:column;gap:12px;padding:22px 24px 22px;border-radius:24px;background:var(--raised);border:1px solid var(--line);box-shadow:0 40px 80px -50px #0009;transition:opacity .35s var(--soft), transform .5s var(--soft)}
+#trip .t-card.out{opacity:0;transform:translateY(16px) scale(.98)}
+#trip .t-card.hide{opacity:0;transform:translateY(40px);pointer-events:none}
+#trip .t-card .eb{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+#trip .t-card h3{margin:0;font-family:var(--f-serif);font-weight:300;font-size:clamp(34px,4vw,48px);line-height:1;letter-spacing:-.03em}
+#trip .t-card h3 em{font-style:italic;font-weight:400}
+#trip .t-card .ds{margin:0;color:var(--muted);font-size:14.5px}
+#trip .t-card .lb{font-size:11.5px;color:var(--faint);font-weight:500;margin-top:2px}
+#trip .t-card .ch{display:flex;flex-wrap:wrap;gap:6px}
+#trip .t-card .ch i{font-style:normal;font-size:12.5px;padding:5px 11px;border-radius:99px;background:color-mix(in srgb,var(--c) 13%,transparent);color:var(--fg);animation:chipIn .5s var(--soft) both;animation-delay:calc(var(--i) * 45ms + 120ms)}
+@keyframes chipIn{from{opacity:0;transform:translateY(8px) scale(.94)}}
+#trip .t-card .ft{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--faint);font-family:var(--f-mono);margin-top:2px}
+#trip .t-card .ft .mini{flex:1;height:3px;border-radius:99px;background:var(--line);overflow:hidden}
+#trip .t-card .ft .mini i{display:block;height:100%;width:var(--f);background:var(--clay)}
+
+/* кнопки */
+#trip .t-nav{position:absolute;right:clamp(16px,4vw,56px);bottom:calc(clamp(20px,5vh,52px) + env(safe-area-inset-bottom,0px));z-index:3;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+#trip .t-nav .row{display:flex;gap:10px}
+#trip .t-nav button{height:54px;border-radius:99px;padding:0 22px;font-size:15px;font-weight:500;border:1px solid var(--line-strong);background:var(--bg);transition:transform var(--fold) var(--soft), background var(--fold) var(--soft), opacity var(--fold) var(--soft)}
+#trip .t-nav .go{display:inline-flex;align-items:center;gap:12px;padding:0 26px 0 10px;background:var(--fg);color:var(--bg);border-color:var(--fg)}
+#trip .t-nav .go .tri{width:36px;height:36px;border-radius:50%;background:var(--clay);display:grid;place-items:center}
+#trip .t-nav .go .tri::before{content:"";margin-left:3px;border-left:11px solid #fff;border-top:7px solid transparent;border-bottom:7px solid transparent}
+@media (hover:hover){#trip .t-nav .go:hover{transform:translateY(-2px);background:var(--clay);border-color:var(--clay)}#trip .t-nav .go:hover .tri{background:var(--fg)}#trip .t-nav .bk:hover:not(:disabled){background:var(--card)}}
+#trip .t-nav button:disabled{opacity:.3;cursor:default}
+#trip .t-nav{transition:opacity .5s var(--soft), transform .6s var(--soft)}
+#trip.intro .t-nav{opacity:0;transform:translateY(20px);pointer-events:none}
+#trip .t-nav small{font-family:var(--f-mono);font-size:10.5px;color:var(--faint);letter-spacing:.04em}
+
+/* заставка над картой всего курса: шапка с текстом и блок выбора уровня */
+#trip .t-intro{position:absolute;z-index:3;display:flex;flex-direction:column;pointer-events:none;transition:opacity .6s var(--soft), transform .8s var(--soft)}
+#trip .t-intro > *{pointer-events:auto}
+#trip .t-intro.gone{opacity:0;transform:translateY(-30px);pointer-events:none}
+#trip .t-intro.gone > *{pointer-events:none}
+#trip .t-head{display:flex;flex-direction:column;gap:14px}
+#trip .t-intro .k{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#trip .t-intro h2{margin:0;font-family:var(--f-serif);font-weight:300;font-size:clamp(40px,4.6vw,76px);line-height:.95;letter-spacing:-.035em;text-shadow:0 2px 40px var(--bg),0 0 12px var(--bg)}
+#trip .t-intro h2 em{font-style:italic;font-weight:400;color:var(--clay)}
+#trip .t-intro p{margin:0;max-width:56ch;color:var(--muted);font-size:16px;text-shadow:0 0 14px var(--bg)}
+#trip .t-sheet{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+#trip .t-intro .go{margin-top:8px;display:inline-flex;align-items:center;gap:12px;height:58px;padding:0 30px 0 11px;border-radius:99px;background:var(--fg);color:var(--bg);font-size:16px;font-weight:500;box-shadow:0 20px 50px -24px var(--fg);transition:transform var(--fold) var(--soft), background var(--fold) var(--soft)}
+#trip .t-intro .go .tri{width:38px;height:38px;border-radius:50%;background:var(--clay);display:grid;place-items:center;flex:none}
+#trip .t-intro .go .tri::before{content:"";margin-left:3px;border-left:12px solid #fff;border-top:7px solid transparent;border-bottom:7px solid transparent}
+@media (hover:hover){#trip .t-intro .go:hover{transform:scale(1.04);background:var(--clay)}#trip .t-intro .go:hover .tri{background:var(--fg)}}
+/* уровни: цвет дороги, название, сколько модулей */
+#trip .tiers-q{display:flex;gap:8px;flex-wrap:wrap}
+#trip .tiers-q button{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 14px 7px 12px;border-radius:99px;border:1px solid var(--line-strong);background:var(--bg);transition:border-color var(--fold) var(--soft)}
+#trip .tiers-q i{width:9px;height:9px;border-radius:50%;background:var(--c);flex:none}
+#trip .tiers-q b{font-weight:600;color:var(--fg)}
+#trip .tiers-q span{color:var(--faint)}
+#trip .tiers-q .arr{display:none}
+@media (hover:hover){#trip .tiers-q button:hover{border-color:var(--c)}}
+@media (min-width:761px){
+  #trip .t-intro{top:clamp(84px,12vh,128px);left:clamp(24px,6vw,96px);width:min(980px,80vw);gap:14px}
+}
+/* светлая вуаль под текстом интро, чтобы лес не мешал читать */
+#trip .t-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 82%,transparent) 30%,transparent 50%);opacity:0;transition:opacity .8s var(--soft)}
+#trip.intro .t-veil{opacity:1}
+/* телефон: текст сверху, карта посередине, выбор уровня и «Поехали» внизу под большим пальцем */
+@media (max-width:760px){
+  #trip .t-intro{inset:0;padding:calc(76px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
+  #trip .t-head{gap:8px}
+  #trip .t-intro h2{font-size:40px;line-height:1}
+  #trip .t-intro h2 em{display:block}
+  #trip .t-intro p{font-size:14px;line-height:1.45}
+  #trip .t-intro p .more{display:none}
+  #trip .t-sheet{margin-top:auto;align-items:stretch;gap:10px}
+  #trip .t-intro .go{order:2;margin:0;width:100%;justify-content:center;height:56px;padding:0 20px 0 10px}
+  #trip .tiers-q{order:1;flex-direction:column;flex-wrap:nowrap;gap:0;border:1px solid var(--line);border-radius:18px;background:var(--raised);overflow:hidden}
+  #trip .tiers-q button{border:0;border-radius:0;background:none;padding:0 16px;height:52px;font-size:15px;gap:12px}
+  #trip .tiers-q button + button{border-top:1px solid var(--line)}
+  #trip .tiers-q i{width:10px;height:10px}
+  #trip .tiers-q span{margin-left:auto;font-size:13px}
+  #trip .tiers-q .arr{display:block;color:var(--faint);font-size:16px;margin-left:4px}
+  #trip.intro .t-prog{opacity:0;pointer-events:none}
+  #trip.intro .t-lab.gate{display:none}
+  #trip.intro .t-veil{background:linear-gradient(180deg,var(--bg) 0%,transparent 34%)}
+}
+/* праздник на воротах уровня */
+#trip .t-cele{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none;text-align:center}
+#trip .t-cele .k{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--c);animation:celeK 2.4s var(--soft) both}
+#trip .t-cele .w{font-family:var(--f-serif);font-weight:300;font-style:italic;font-size:clamp(90px,18vw,240px);line-height:.9;letter-spacing:-.04em;color:var(--fg);text-shadow:0 0 60px var(--bg)}
+#trip .t-cele .w span{display:inline-block;animation:celeL 2.4s var(--soft) both;animation-delay:calc(var(--i) * 60ms)}
+@keyframes celeL{0%{opacity:0;transform:translateY(60px) rotate(8deg) scale(.6)}22%{opacity:1;transform:none}78%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-40px) scale(1.05)}}
+@keyframes celeK{0%{opacity:0;transform:translateY(10px)}20%,80%{opacity:1;transform:none}100%{opacity:0}}
+
+@media (max-width:760px){
+  #trip .t-top{grid-template-columns:auto minmax(0,1fr);gap:12px}
+  #trip .t-count{display:none}
+  #trip .t-back{padding:0 12px;font-size:0}
+  #trip .t-back::before{content:"←";font-size:16px}
+  #trip .t-card{left:12px;right:12px;width:auto;bottom:calc(84px + env(safe-area-inset-bottom,0px));padding:16px 16px 14px;gap:8px;border-radius:20px;max-height:44vh;overflow:auto}
+  #trip .t-card h3{font-size:32px}
+  #trip .t-card .ds{font-size:13.5px}
+  #trip .t-nav{left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));align-items:stretch}
+  #trip .t-nav .row{width:100%}
+  #trip .t-nav .go{flex:1;justify-content:center}
+  #trip .t-nav small{display:none}
+  #trip .t-lab span{font-size:14px}
+  #trip .t-lab.on span{font-size:17px}
+  #trip .t-lab.gate span{font-size:22px}
+}
+@media (prefers-reduced-motion:reduce){#trip .t-cele{display:none}}
+
+/* производительность: перерасчёт раскладки не выходит за карточку, движущиеся слои уходят на видеокарту */
+.tier{contain:layout style}
+.mods{contain:layout style}
+.mod.open .topic{will-change:transform,opacity}
+.body > div{contain:paint}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.topic{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <h1 class="in" style="--d:1">Выбери <em>свой</em> уровень</h1>
+    <p class="lead in" style="--d:2">Три подписки: от первых шагов с нейросетями до внедрения ИИ в бизнес.</p>
+    <button class="trip-btn in" style="--d:3" type="button" data-trip="0"><span class="tri"></span>Весь курс — одна дорога</button>
+  </header>
+
+  <main class="tiers" id="tiers"></main>
+
+
+  <footer>План обновляется вместе с обсуждением</footer>
+</div>
+
+<script>
+const PLAN = {
+  version: 64,
+  date: "8 окт 2026",
+  tiers: [
+    { name:"Lite", tagline:"ИИ как инструмент на каждый день", fmt:"Записи уроков", incl:"Включает:",
+      modules:[
+        { name:"AI Base", desc:"Фундамент: как устроен ИИ и как с ним говорить", topics:[
+          ["История ИИ","От первых чат-ботов до ChatGPT и Claude. Как устроены нейросети простыми словами и почему всё ускорилось."],
+          ["ChatGPT, Claude, Gemini","Сильные стороны каждого сервиса, бесплатные и платные тарифы, где искать нужную нейросеть."],
+          ["Промптинг","Роль, контекст, пример, формат ответа. Как уточнять и дорабатывать результат в диалоге."],
+          ["Галлюцинации и проверка фактов","Почему ИИ уверенно ошибается и как это заметить. Проверка источников и цифр."],
+          ["Безопасность","Данные, которые нельзя отдавать нейросети. Как распознать дипфейк и схемы мошенников."]
+        ]},
+        { name:"AI Study", desc:"ИИ для учёбы и работы с информацией", topics:[
+          ["Документы, таблицы и презентации","Письма, отчёты, формулы в таблицах и слайды за минуты. Как отдать ИИ рутину с файлами."],
+          ["Конспекты и подготовка к экзаменам","Сжать лекцию или книгу, объяснить сложную тему простыми словами, сделать тест для самопроверки."],
+          ["Deep Research и NotebookLM","Глубокий поиск с источниками за пару минут. Свои материалы превращаются в базу знаний и подкаст."]
+        ]},
+        { name:"AI Media", desc:"Картинки, видео и музыка с нейросетями", topics:[
+          ["Генерация изображений","Какие нейросети выбрать и как писать промпты: стиль, свет, ракурс, композиция. Первые работы с нуля."],
+          ["Генерация видео","Видео по тексту и оживление фото. Как управлять камерой и сценой, короткие ролики для соцсетей."],
+          ["Редактирование фото и видео","Убрать или заменить фон, дорисовать недостающее, убрать лишнее из кадра, улучшить качество."],
+          ["Генерация музыки","Своя песня в Suno: жанр, текст, вокал. Музыка и фон для собственных роликов."]
+        ]},
+        { name:"Pro Preview", desc:"Взгляд на то, что ждёт дальше", topics:[
+          ["Сайт вайбкодом за 10 минут","Показываю, как из одной фразы получается работающий сайт."]
+        ]}
+      ]},
+    { name:"Pro", feat:true, tagline:"Создавать продукты: код, дизайн, медиа", fmt:"Проверка домашних заданий и чат", inherit:"Всё из Lite", incl:"Плюс:",
+      modules:[
+        { name:"Vibecode", desc:"От идеи до работающего приложения без знания кода", topics:[
+          ["Вайбкод","Как описать идею, чтобы ИИ написал код. Сайты, сервисы и приложения без знания программирования."],
+          ["Локальные харнесы","Claude Code, OpenCode, omp/pi, Hermes Agent, DeepSeek harness: агенты, которые работают прямо в папке с проектом."],
+          ["Git, база данных и деплой","Сохранение версий проекта, хранение данных пользователей и публикация сайта в интернет."],
+          ["API и интеграции","Как подключить нейросеть, оплату, почту или мессенджер к своему приложению."]
+        ]},
+        { name:"Design & Motion", desc:"Дизайн, карточки WB, интерфейсы, монтаж и анимация", topics:[
+          ["Дизайн с помощью нейросетей","Логотипы, баннеры, обложки и фирменный стиль. Как получить дизайн, а не случайную картинку."],
+          ["Карточки для Wildberries","Продающие карточки: фото, инфографика и тексты под требования маркетплейса."],
+          ["Интерфейсы приложений","Макеты экранов и UI-киты, от наброска до готового интерфейса для вайбкода."],
+          ["Монтаж и моушн-дизайн","Нарезка, титры и анимация через код, который пишут Claude и GPT. Моушн без After Effects."]
+        ]},
+        { name:"AI Media+", desc:"Длинные стильные видео, LoRA, музыка и звук", topics:[
+          ["Длинные видео на нодах","Пайплайны в ComfyUI: длинный ролик в едином стиле, сцена за сценой, без разрывов картинки."],
+          ["Midjourney и Stable Diffusion","Референсы стиля и персонажа в Midjourney, модели, чекпоинты, ControlNet и инпейнтинг в Stable Diffusion. Узнаваемый стиль и полный контроль над картинкой."],
+          ["LoRA","Обучаем свою: персонаж, товар или стиль, который нейросеть повторит в любой сцене."],
+          ["Музыка и аудио","Треки под заказ, стемы, звуковые эффекты и саунд-дизайн для видео."],
+          ["ИИ-аватары","Говорящий цифровой двойник для роликов и рекламы, который выглядит живым."],
+          ["Клонирование голоса","Свой голос в нейросети, озвучка видео и перевод на другие языки тем же голосом."]
+        ]},
+        { name:"AI Power User", desc:"Projects, Skills и MCP: ИИ, настроенный под себя", topics:[
+          ["Projects и Custom GPTs","Рабочие пространства под задачи и свои ассистенты с инструкциями и файлами."],
+          ["Skills","Навыки, которые учат ИИ делать задачу по твоим правилам каждый раз одинаково."],
+          ["MCP-коннекторы","ИИ сам работает с почтой, календарём, документами и другими сервисами."],
+          ["Память и инструкции","Как научить ИИ помнить тебя, твой стиль и задачи."]
+        ]},
+        { name:"Local AI", beta:true, desc:"Нейросети на своём компьютере", topics:[
+          ["llama.cpp и LM Studio","Запуск нейросетей без интернета и подписок. Выбор и установка моделей."],
+          ["Локальный ComfyUI","Картинки и видео у себя: без лимитов и оплаты за генерацию."],
+          ["Железо","Видеокарта, память, что потянет твой компьютер. Когда локальный ИИ выгоднее облачного."]
+        ]},
+        { name:"Финальный проект", desc:"Готовый продукт или портфолио", topics:[
+          ["Продукт или 3 кейса","Работающий проект или три работы, которые не стыдно показать клиенту."]
+        ]}
+      ]},
+    { name:"Business", tagline:"Внедрять ИИ в компанию и зарабатывать на нём", fmt:"Разбор бизнеса 1-на-1 и групповые созвоны", inherit:"Всё из Pro", incl:"Плюс:",
+      modules:[
+        { name:"Strategy", desc:"Где ИИ окупится и с чего начать", topics:[
+          ["Где ИИ окупится","Разбираем отделы и процессы: где ИИ экономит время и деньги, а где только мешает."],
+          ["Расчёт окупаемости","Сколько стоит рутина сейчас и сколько сэкономит ИИ. Аргументы для руководства."],
+          ["Карта внедрения","План по шагам: быстрые победы в начале, сложные проекты потом."],
+          ["Аудит своего бизнеса","Применяем всё к своей компании и уходим с готовым списком задач для ИИ."]
+        ]},
+        { name:"Automation", desc:"Рутина компании работает сама", topics:[
+          ["Свой AI-агент","Агент на базе pi, nanobot и аналогов, который сам выполняет рабочие задачи."],
+          ["n8n, Make, Zapier","Связываем сервисы, чтобы заявки обрабатывались без людей."],
+          ["Обработка документов","ИИ читает счета, договоры и анкеты, достаёт данные и раскладывает по системам."],
+          ["Интеграции","amoCRM, Bitrix24, Google Sheets, Telegram: подключаем ИИ к тому, что уже есть."],
+          ["Автоотчёты","Сводка по цифрам приходит руководителю сама, без ручного сбора."]
+        ]},
+        { name:"AI Agents", desc:"Агенты, которые отвечают, продают и действуют", topics:[
+          ["Боты поддержки и продаж","Telegram, WhatsApp, сайт: отвечают круглосуточно и передают менеджеру тёплых клиентов."],
+          ["RAG","Агент знает регламенты, каталог и FAQ компании и отвечает по ним без выдумок."],
+          ["Агенты с инструментами","MCP, API, Claude Agent SDK: агент ищет, записывает, отправляет и создаёт задачи."],
+          ["Стоимость и модели","Сколько стоит работа агента, как не переплачивать и какую модель брать."]
+        ]},
+        { name:"Analytics", desc:"Решения на данных без аналитика", topics:[
+          ["Глубокий анализ","Deep Research по рынку, нише и конкурентам за час вместо недели."],
+          ["Продажи и отзывы","ИИ находит закономерности в продажах и главные боли клиентов в отзывах."],
+          ["Дашборды и прогнозы","Ключевые цифры на одной панели и прогноз продаж."],
+          ["SQL и формулы","Вопрос обычными словами, а ИИ пишет запрос к базе или формулу в таблице."]
+        ]},
+        { name:"Rollout", desc:"Свой AI-портал для команды, правила и законы", topics:[
+          ["Open WebUI","Внутренний ChatGPT для сотрудников: свои модели, доступы и база знаний."],
+          ["New API","Один шлюз ко всем нейросетям: ключи на сотрудников, лимиты и контроль затрат."],
+          ["Обучение команды","Готовые промпты и навыки под задачи сотрудников."],
+          ["Регламенты","Какие задачи можно отдавать ИИ, какие данные нельзя, кто отвечает за результат."],
+          ["152-ФЗ и безопасность","Как работать с ИИ, не нарушая закон о персональных данных."],
+          ["Авторское право и маркировка","Кому принадлежит сгенерированное и как маркировать рекламу."]
+        ]},
+        { name:"AI Agency", beta:true, desc:"Продавать внедрение ИИ другим компаниям", topics:[
+          ["Агентство и фриланс","Услуги, кейсы и первые клиенты на внедрении ИИ под ключ."],
+          ["Упаковка и цена","Как описать услугу, собрать портфолио и назначить цену, за которую платят."]
+        ]}
+      ]}
+  ],
+  every: [
+    ["Cowork Live", "Суббота и воскресенье в прямом эфире: работаю над проектами и общаюсь со слушателями, новости ИИ, интересные факты, ответы на вопросы."],
+    ["Ежемесячный апдейт", "12 разборов в год: новые нейросети и функции каждый месяц. Курс не устаревает, пока действует подписка."],
+    ["Проект и сертификат", "Каждый уровень заканчивается работой, которую можно показать, и сертификатом."]
+  ]
+};
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? a : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? b : c; };
+
+
+document.getElementById("tiers").innerHTML = PLAN.tiers.map((t, ti) => {
+  const n = t.modules.reduce((a, m) => a + m.topics.length, 0);
+  return `<section class="tier in ${t.feat ? "feat" : ""}" style="--d:${ti + 3}">
+    <div class="tier-top">
+      <div class="tier-name"><h2>${t.name}</h2><span class="count">${t.modules.length} ${plural(t.modules.length,"модуль","модуля","модулей")} · ${n} ${plural(n,"тема","темы","тем")}</span></div>
+      ${t.inherit ? `<span class="inherit">${esc(t.inherit)}</span>` : ""}
+      <p class="tagline">${esc(t.tagline)}</p>
+      <p class="fmt">${esc(t.fmt)}</p>
+      <button class="path-btn" type="button" data-trip="${ti}"><span class="tri"></span>${ti ? "Путь с " + esc(t.name) : "Начать путь"}</button>
+    </div>
+    <p class="incl">${esc(t.incl)}</p>
+    <ul class="mods">${[...t.modules, {name:"В каждой подписке", perk:true, desc:"Cowork Live, ежемесячный апдейт, проект и сертификат", topics:PLAN.every}].map((m, mi) => `
+      <li class="mod${m.perk ? " perk" : ""}">
+        <button class="mod-h" type="button" aria-expanded="false" aria-controls="m${ti}-${mi}">
+          <span class="mod-txt"><span class="mod-name">${esc(m.name)}${m.beta ? '<span class="beta">бета</span>' : ""}</span><span class="mod-desc"><span>${esc(m.desc)}</span></span></span>
+          <span class="plus" aria-hidden="true"></span>
+        </button>
+        <div class="body" id="m${ti}-${mi}"><div><ul class="topics">${m.topics.map(([b, s], i) =>
+          `<li class="topic" style="--i:${i}"><span class="num">${String(i + 1).padStart(2, "0")}</span><div><b>${esc(b)}</b><span>${esc(s)}</span></div></li>`).join("")}</ul></div></div>
+      </li>`).join("")}
+    </ul>
+  </section>`;
+}).join("");
+
+
+// Открытие модуля по технике FLIP: раскладка меняется один раз, а движение рисуется только
+// трансформами, прозрачностью и обрезкой. Браузер не пересчитывает страницу в каждом кадре.
+const desktop = matchMedia("(min-width: 981px)"), still = matchMedia("(prefers-reduced-motion: reduce)");
+const MOVE = 380, FADE = 70, EASE = "cubic-bezier(.45,0,.15,1)";
+let running = [], busy = Promise.resolve();
+const folded = (m, openMod) => desktop.matches && !!openMod && m !== openMod && m.parentElement === openMod.parentElement;
+
+// положение каждого движущегося элемента: верх (для разделителя — низ) и карточка, в которой он лежит
+function snapshot(){
+  // getBoundingClientRect отдаёт экранные пиксели, а сдвиги внутри уменьшенной страницы — в её собственных
+  const z = fitK, r = new Map(), put = (el, y, tier) => r.set(el, {y: y / z, tier});
+  document.querySelectorAll(".tier").forEach(t => { const b = t.getBoundingClientRect(); put(t, b.top, null); r.get(t).h = b.height / z; });
+  document.querySelectorAll(".mod").forEach(m => {
+    const t = m.closest(".tier");
+    put(m.querySelector(".mod-txt"), m.querySelector(".mod-txt").getBoundingClientRect().top, t);
+    put(m.querySelector(".plus"), m.querySelector(".plus").getBoundingClientRect().top, t);
+    put(m, m.getBoundingClientRect().bottom, t);
+  });
+  const f = document.querySelector("footer"); if (f) put(f, f.getBoundingClientRect().top, null);
+  return r;
+}
+const play = (el, frames, opts) => { const a = el.animate(frames, {duration: MOVE, easing: EASE, ...opts}); running.push(a); return a; };
+
+function setOpen(target){
+  document.querySelectorAll(".mod.open").forEach(m => { m.classList.remove("open"); m.querySelector(".mod-h").setAttribute("aria-expanded", "false"); });
+  if (target){ target.classList.add("open"); target.querySelector(".mod-h").setAttribute("aria-expanded", "true"); }
+  document.querySelectorAll(".mods").forEach(ul => ul.classList.toggle("has-open", !!ul.querySelector(".mod.open")));
+}
+
+async function toggle(mod){
+  running.forEach(a => a.finish()); running = [];
+  document.querySelectorAll(".tier").forEach(t => t.style.removeProperty("--extra"));
+  const prev = document.querySelector(".mod.open"), next = prev === mod ? null : mod;
+  if (still.matches) return setOpen(next);
+  const mods = [...document.querySelectorAll(".mod")];
+  const hide = mods.filter(m => !folded(m, prev) && folded(m, next)).map(m => m.querySelector(".mod-desc"));
+  const show = mods.filter(m => folded(m, prev) && !folded(m, next)).map(m => m.querySelector(".mod-desc"));
+
+  // 1. то, что исчезнет из раскладки, сначала плавно гаснет
+  const out = [...hide, ...(prev ? [prev.querySelector(".body > div")] : [])]
+    .map(el => el.animate([{opacity: 1}, {opacity: 0}], {duration: FADE, easing: "ease-out", fill: "forwards"}));
+  await Promise.all(out.map(a => a.finished.catch(() => {})));
+
+  // 2. запомнить положение, переключить раскладку, измерить снова
+  const first = snapshot();
+  setOpen(next);
+  out.forEach(a => a.cancel());
+  const last = snapshot();
+
+  // 3. вернуть каждый элемент визуально на старое место и отпустить.
+  // Карточка тарифа едет целиком, элементы внутри — только на свою разницу относительно карточки.
+  // сдвиг идёт через свойство translate, а не transform: оно складывается со сдвигом при наведении
+  // (.mod-txt, .tier), иначе анимация на время перезаписывает его и пункт дёргается вбок
+  const shift = (el, d, pseudo) => Math.abs(d) > .5 && play(el, [{translate: `0 ${d}px`}, {translate: "0 0"}], pseudo ? {pseudoElement: pseudo} : {});
+  const tierD = t => first.get(t).y - last.get(t).y;
+  for (const [el, a] of first){
+    const b = last.get(el);
+    if (el.classList.contains("tier")){
+      shift(el, a.y - b.y);
+      if (b.h - a.h > .5) play(el, [{clipPath: `inset(0 0 ${b.h - a.h}px 0 round 22px)`}, {clipPath: "inset(0 0 0 0 round 22px)"}], {pseudoElement: "::before"});
+      else if (a.h - b.h > .5){
+        el.style.setProperty("--extra", `${a.h - b.h}px`);
+        play(el, [{clipPath: "inset(0 0 0 0 round 22px)"}, {clipPath: `inset(0 0 ${a.h - b.h}px 0 round 22px)`}], {pseudoElement: "::before"})
+          .finished.catch(() => {}).finally(() => el.style.removeProperty("--extra"));
+      }
+    } else {
+      const d = a.y - b.y - (a.tier ? tierD(a.tier) : 0);
+      shift(el, d, el.classList.contains("mod") ? "::after" : null);
+    }
+  }
+  if (next){
+    const body = next.querySelector(".body > div"), txt = next.querySelector(".mod-txt"), t = next.closest(".tier");
+    const d = first.get(txt).y - last.get(txt).y - tierD(t), h = body.getBoundingClientRect().height / fitK;
+    play(body, [{translate: `0 ${d}px`, clipPath: `inset(0 0 ${h}px 0)`}, {translate: "0 0", clipPath: "inset(0 0 0 0)"}]);
+  }
+  show.forEach(el => play(el, [{opacity: 0}, {opacity: 1}], {duration: MOVE * .6, delay: MOVE * .4, fill: "backwards"}));
+  setTimeout(queueFocus, MOVE + 40);
+}
+
+// Телефон: мыши нет, поэтому лёгкий сдвиг получает пункт, который сейчас в середине экрана,
+// там, куда смотрит читающий
+const touch = matchMedia("(hover: none)");
+let focusRaf = 0;
+function focusCenter(){
+  focusRaf = 0;
+  const mid = innerHeight / 2;
+  let best = null, bestD = innerHeight * .18;
+  document.querySelectorAll(".mod-h, .mod.open .topic").forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.bottom < mid - 200 || r.top > mid + 200) return;
+    const d = Math.abs((r.top + r.bottom) / 2 - mid);
+    if (d < bestD){ bestD = d; best = el; }
+  });
+  document.querySelectorAll(".focus").forEach(el => el !== best && el.classList.remove("focus"));
+  if (best) best.classList.add("focus");
+}
+const queueFocus = () => { if (touch.matches && !focusRaf) focusRaf = requestAnimationFrame(focusCenter); };
+addEventListener("scroll", queueFocus, {passive: true});
+addEventListener("resize", queueFocus);
+touch.addEventListener("change", () => { document.querySelectorAll(".focus").forEach(el => el.classList.remove("focus")); queueFocus(); });
+queueFocus();
+
+// ПК: колонки тарифов вместе с заголовком целиком помещаются в видимую часть окна, сколько бы места
+// ни занимали вкладки и панели браузера. Сначала плотнее отступы, потом, если нужно, страница
+// уменьшается ровно настолько, чтобы влезть (но не мельче 72%, дальше уже прокрутка)
+let fitK = 1;
+function fitScreen(){
+  const root = document.documentElement, tiers = document.getElementById("tiers");
+  if (document.querySelector(".mod.open") || root.classList.contains("trip-open")) return;   // раскрытый модуль не в счёт
+  const set = (dz, k) => { root.style.setProperty("--dz", dz); root.style.setProperty("--fit", k); fitK = k; };
+  set(0, 1);
+  if (!desktop.matches) return;
+  const need = () => tiers.getBoundingClientRect().bottom + scrollY + 20;
+  if (need() <= innerHeight) return;
+  // 1. плотность ровно такая, какая нужна: поиск делением пополам
+  set(1, 1);
+  if (need() <= innerHeight){
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 7; i++){ const m = (lo + hi) / 2; set(m, 1); need() <= innerHeight ? hi = m : lo = m; }
+    return set(hi, 1);
+  }
+  // 2. не хватило — страница уменьшается, но не мельче 66%, дальше уже прокрутка
+  set(1, Math.max(.66, Math.floor(innerHeight / need() * 1000) / 1000));
+}
+let fitT = 0;
+addEventListener("resize", () => { clearTimeout(fitT); fitT = setTimeout(fitScreen, 120); });
+fitScreen();
+document.fonts && document.fonts.ready.then(fitScreen);
+
+document.addEventListener("click", e => {
+  const h = e.target.closest(".mod-h");
+  if (!h) return;
+  busy = busy.then(() => toggle(h.parentElement));
+});
+
+
+// Дорога курса. Весь курс — один путь: Lite → Pro → Business → финиш.
+// Сцена рисуется на canvas своей перспективной проекцией: плоская дорога уходит к горизонту,
+// камера едет за путником, на старте и финише поднимается и показывает всю карту.
+const Trip = (() => {
+  const TIER = ["#788C5D", "#5E8DBF", "#B9587A"];
+  const CLAY = "#D97757";
+  const SP = 62, START = 40, RW = 3.6, BACK = 15, HEIGHT = 6.4, AHEAD = 26, FOG = 270;
+  let FOV = 50 * Math.PI / 180;
+  let el, cv, g, W = 0, H = 0, F = 1, DPR = 1, raf = 0, colors = {};
+  let route = null, stops = [], stopD = [], gates = [], dots = [], modCount = 0;
+  let d = START, mv = null, cur = -1, ov = 1, ovMv = null, yawS = null, confetti = [], lastNow = 0, pending = null;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const angD = (a, b) => { let x = a - b; while (x > Math.PI) x -= 2 * Math.PI; while (x < -Math.PI) x += 2 * Math.PI; return x; };
+  let seed = 11; const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+  const rm = matchMedia("(prefers-reduced-motion: reduce)"), reduce = () => rm.matches;
+  // лес: деревья разложены по полосам вдоль z, чтобы у дороги перебирать только ближние
+  // TR — высота центра кроны над землёй в радиусах кроны: 0 — куст без ствола, дальше стволы разной длины
+  const BZ = 30, TR = [.7, 1.7, 2.5, 3.4, 4.5];
+  let tb = [], tz0 = 0, mapCache = {cv: null, key: ""};
+  const items = [];
+  // рост леса: сначала деревьев нет; когда путь начат, они вырастают впереди путника волной от обочины
+  // order — все деревья по возрастанию s (место на маршруте), gi — сколько из них уже посажено
+  const GROW_AHEAD = 95, GROW_DUR = 1000;
+  let order = [], gi = 0, started = false, growEnd = 0;
+  const pop = t => { const c = 1.9, u = t - 1; return 1 + (c + 1) * u * u * u + c * u * u; };   // рост с небольшим перехлёстом
+  // размер дерева или точки сейчас: 0 — нет; рост стартует чуть мягче (t^1.25)
+  function life(o, now){
+    if (o.born > now) return 0;
+    const a = now - o.born;
+    return a >= GROW_DUR ? 1 : pop(Math.pow(a / GROW_DUR, 1.25));
+  }
+  const hash = (x, z) => { const v = Math.sin(x * 12.9898 + z * 78.233) * 43758.5453; return v - Math.floor(v); };
+
+  // ---------- цвета ----------
+  const hex = h => { h = h.trim().replace("#", ""); if (h.length === 3) h = [...h].map(c => c + c).join(""); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
+  const mix = (a, b, t) => { const A = hex(a), B = hex(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); };
+  function readTheme(){
+    const cs = getComputedStyle(document.documentElement), v = n => cs.getPropertyValue(n).trim();
+    const bg = v("--bg"), dark = hex(bg).reduce((a, b) => a + b) < 380;
+    colors = {bg, fg: v("--fg"), line: v("--line-strong"), dark,
+      road: dark ? "#34322E" : "#2E2C29", dash: dark ? "#8C887F" : bg,
+      tierSoft: TIER.map(c => mix(c, bg, dark ? .55 : .45)), tierGround: TIER.map(c => mix(bg, c, dark ? .1 : .13))};
+    // 4 оттенка кроны на каждый уровень, считаются один раз
+    colors.tree = TIER.flatMap(c => [0, 1, 2, 3].map(s => mix(c, bg, dark ? .45 + s * .08 : .3 + s * .11)));
+    mapCache.key = ""; if (el) el._tg = -1;
+  }
+
+  // ---------- мир ----------
+  function buildStops(){
+    stops = []; modCount = 0;
+    PLAN.tiers.forEach((t, ti) => {
+      stops.push({kind: "gate", tier: ti, title: t.name, desc: t.tagline, fmt: t.fmt, mods: t.modules.map(m => m.name)});
+      t.modules.forEach((m, mi) => stops.push({kind: "mod", tier: ti, title: m.name, desc: m.desc, beta: m.beta, topics: m.topics.map(x => x[0]), n: mi + 1, of: t.modules.length, g: ++modCount}));
+    });
+    stops.push({kind: "end", tier: 2, title: "Финиш", desc: "Три уровня позади: проекты, сертификаты и своя практика с ИИ."});
+    stopD = stops.map((_, i) => START + i * SP);
+    gates = stops.map((s, i) => s.kind === "gate" ? i : -1).filter(i => i >= 0);
+  }
+  const fx = z => 26 * Math.sin(z / 80) + 11 * Math.sin(z / 31 + 1.3);
+  function buildRoute(){
+    const total = stopD.at(-1) + 160, pts = [[fx(0), 0]], cum = [0];
+    for (let z = 1; cum.at(-1) < total; z += 1){ const p = pts.at(-1), x = fx(z); pts.push([x, z]); cum.push(cum.at(-1) + Math.hypot(x - p[0], 1)); }
+    route = {pts, cum, len: cum.at(-1)};
+  }
+  function at(s){
+    const {pts, cum} = route; s = clamp(s, 0, route.len - .001);
+    let lo = 0, hi = cum.length - 1; while (hi - lo > 1){ const m = (lo + hi) >> 1; cum[m] < s ? lo = m : hi = m; }
+    const f = (s - cum[lo]) / (cum[hi] - cum[lo] || 1), a = pts[lo], b = pts[hi], tx = b[0] - a[0], tz = b[1] - a[1], n = Math.hypot(tx, tz) || 1;
+    return {x: a[0] + tx * f, z: a[1] + tz * f, tx: tx / n, tz: tz / n};
+  }
+  const pinOff = () => W <= 760 ? RW + 1.2 : RW + 2.6;   // на телефоне метки ближе к дороге
+  const tierAt = s => { let t = 0; gates.forEach((gi, k) => { if (s >= stopD[gi] - .5) t = k; }); return t; };
+  function lateral(x, z){
+    // расстояние от точки до оси дороги; дорога задана как x = fx(z), z = индекс точки
+    const zEnd = route.pts.length - 1;
+    if (z < 0) return Math.hypot(x - fx(0), z);
+    if (z > zEnd) return Math.hypot(x - route.pts[zEnd][0], z - zEnd);
+    const dx = 26 / 80 * Math.cos(z / 80) + 11 / 31 * Math.cos(z / 31 + 1.3);
+    return Math.abs(x - fx(z)) / Math.hypot(1, dx);
+  }
+  function addTree(x, z, h, r, tier, s, lat){
+    // длина ствола округляется до одной из пяти высот TR
+    const o = h && rnd() < .28 ? 1 : 0, L = h * .55 / r + (o ? 1.1 : .8);
+    let b = 0; if (h){ b = 1; for (let i = 2; i < TR.length; i++) if (Math.abs(TR[i] - L) < Math.abs(TR[b] - L)) b = i; }
+    // w — задержка роста: у дороги деревья встают первыми, дальше от неё позже
+    const w = Math.min(lat, 240) * 5 + hash(x, z) * 420;
+    tb[clamp((z - tz0) / BZ | 0, 0, tb.length - 1)].push({T: 1, x, z, r, b, c: tier * 4 + (rnd() * 4 | 0), o, top: TR[b] + (o ? 1.35 : 1), s, w, born: Infinity, zc: 0, k: 0, sx: 0, sy: 0});
+  }
+  function buildDecor(){
+    seed = 11; dots = [];
+    // лес только там, где его видно с дороги: полоса до 75 от оси, дальше 40 — вдвое реже.
+    // За стартом и после финиша деревьев нет: камера туда не смотрит
+    const zEnd = route.pts.length - 1, C = 10, z1 = zEnd + GROW_AHEAD;
+    tz0 = -40;
+    tb = Array.from({length: Math.ceil((z1 - tz0) / BZ) + 1}, () => []);
+    for (let z = tz0; z < z1; z += C) for (let x = -130; x < 130; x += C){
+      const tx = x + rnd() * C, tz = z + rnd() * C, lat = lateral(tx, tz), keep = rnd();
+      if (lat < RW + 5 + keep * 2 || lat > 75 || (lat > 40 && keep > .5)) continue;
+      const s = tz > zEnd ? route.len + tz - zEnd : route.cum[clamp(Math.round(tz), 0, zEnd)];
+      addTree(tx, tz, 2.8 + rnd() * 5, 1 + rnd() * 1.6, tierAt(s), s, lat);
+    }
+    // аллея вдоль обочин: деревья у самой дороги заполняют низ кадра по бокам
+    for (let s = 0; s < route.len; s += 6) [-1, 1].forEach(side => {
+      const p = at(s + rnd() * 5), off = RW + 5.5 + rnd() * 6, x = p.x + p.tz * off * side, z = p.z - p.tx * off * side;
+      if (lateral(x, z) < RW + 5) return;
+      addTree(x, z, 3.4 + rnd() * 4, 1.1 + rnd() * 1.3, tierAt(s), s, off);
+    });
+    // низкие кусты у самой обочины, в стороне от меток и ворот
+    for (let s = 0; s < route.len; s += 2.6) [-1, 1].forEach(side => {
+      const ss = s + rnd() * 2, off = RW + 1.9 + rnd() * 3.4, r = .45 + rnd() * .6;
+      if (stopD.some(q => Math.abs(q - ss) < 5)) return;
+      const p = at(ss), x = p.x + p.tz * off * side, z = p.z - p.tx * off * side;
+      addTree(x, z, 0, r, tierAt(ss), ss, off);
+    });
+    for (let n = 0; dots.length < 900 && n < 5000; n++){
+      const s = rnd() * route.len, p = at(s), side = rnd() < .5 ? -1 : 1, off = RW + 2.5 + Math.pow(rnd(), 1.3) * 95;
+      const x = p.x + p.tz * off * side, z = p.z - p.tx * off * side;
+      if (lateral(x, z) < RW + 1.5) continue;
+      dots.push({x, z, r: .25 + rnd() * .9, tier: tierAt(s), s, w: off * 5 + hash(x, z) * 420, born: Infinity});
+    }
+    // точки у дороги вырастают так же, как деревья: общий список по месту на маршруте
+    order = [...tb.flat(), ...dots].sort((a, b) => a.s - b.s); gi = 0; growEnd = 0;
+  }
+
+  function growTo(S, now){
+    // сажает все деревья до места S на маршруте; каждое вырастет через свою задержку
+    const instant = reduce();
+    for (; gi < order.length && order[gi].s <= S; gi++){
+      const t = order[gi];
+      t.born = instant ? now - GROW_DUR : now + t.w;
+      if (t.born + GROW_DUR > growEnd) growEnd = t.born + GROW_DUR;
+    }
+  }
+  function replant(){
+    // перед новым заездом лес снова пустой и вырастет заново
+    for (const t of order) t.born = Infinity;
+    gi = 0; started = false;
+  }
+
+  // ---------- камера и проекция ----------
+  let cam = {x: 0, y: 10, z: 0, cY: 1, sY: 0, cP: 1, sP: 0, ox: 0, oy: 0};
+  function proj(x, y, z){
+    const rx = x - cam.x, ry = y - cam.y, rz = z - cam.z;
+    const x1 = rx * cam.cY - rz * cam.sY, z1 = rx * cam.sY + rz * cam.cY;
+    const zc = z1 * cam.cP - ry * cam.sP, yc = z1 * cam.sP + ry * cam.cP;
+    return [W / 2 + cam.ox + F * x1 / zc, H / 2 + cam.oy - F * yc / zc, zc];
+  }
+  function overviewCam(){
+    if (W > 760){
+      // на ПК карта лежит боком: дорога идёт слева направо от края до края
+      const za = at(0).z - 40, zb = at(stopD.at(-1)).z + 70, p = 1.25;
+      const dist = (zb - za) / 2 * F / (W / 2);
+      return {x: dist * Math.cos(p), y: dist * Math.sin(p), z: (za + zb) / 2, yaw: -Math.PI / 2, pitch: p};
+    }
+    const z0 = at(0).z, z1 = at(route.len).z, a = (z1 - z0) / 2 + 30, zc = (z0 + z1) / 2, p = 1.0;
+    const t = Math.tan(FOV / 2), aspect = W / H;
+    let dist = a * (Math.sin(p) / t + Math.cos(p)) * 1.04;
+    dist = Math.max(dist, 60 / (t * aspect) * 1.1);
+    if (W <= 760) dist *= fit.f;              // на телефоне карта вписана в просвет между текстом и кнопками
+    return {x: 0, y: dist * Math.sin(p), z: zc - dist * Math.cos(p), yaw: 0, pitch: p};
+  }
+  // телефон: масштаб и сдвиг карты считаются по реальной высоте шапки и блока выбора
+  const fit = {f: 1.5, oy: .25};
+  function fitMap(){
+    if (W > 760) return;
+    const intro = el.querySelector(".t-intro"), head = intro.querySelector(".t-head"), sheet = intro.querySelector(".t-sheet");
+    if (!head || !sheet) return;
+    // offsetTop не учитывает анимацию появления, поэтому меряется итоговое место
+    const top = head.offsetTop + head.offsetHeight + 34, bot = sheet.offsetTop - 18;
+    if (bot - top < 80) return;
+    const span = () => {
+      const b = overviewCam();
+      cam = {x: b.x, y: b.y, z: b.z, ox: 0, oy: 0, cY: Math.cos(b.yaw), sY: Math.sin(b.yaw), cP: Math.cos(b.pitch), sP: Math.sin(b.pitch)};
+      let y0 = 1e9, y1 = -1e9;
+      for (let s = 0; s <= route.len; s += 10){ const p = at(s), q = proj(p.x, 0, p.z); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); }
+      return [y0, y1];
+    };
+    // перспектива почти линейна по расстоянию: два прохода хватает, чтобы карта легла в просвет
+    for (let i = 0; i < 2; i++){ const [a, b] = span(); fit.f *= (b - a) / (bot - top); }
+    const [a, b] = span(); fit.oy = ((top + bot) / 2 - (a + b) / 2) / H;
+  }
+  function driveCam(dt){
+    const c = at(d - BACK), t = at(d + AHEAD);
+    const yaw = Math.atan2(t.x - c.x, t.z - c.z);
+    yawS = yawS === null ? yaw : yawS + angD(yaw, yawS) * (1 - Math.pow(.0015, dt));
+    return {x: c.x, y: HEIGHT, z: c.z, yaw: yawS, pitch: Math.atan2(HEIGHT, Math.hypot(t.x - c.x, t.z - c.z)) + .03};
+  }
+  function setCam(dt){
+    const a = driveCam(dt), b = overviewCam(), e = ease(ov);
+    const yaw = a.yaw + angD(b.yaw, a.yaw) * e, pitch = a.pitch + (b.pitch - a.pitch) * e;
+    // по дуге: при подъёме камера сначала набирает высоту, потом уходит к центру карты
+    const lift = Math.sin(e * Math.PI) * 40;
+    const wide = W > 760;
+    cam = {x: a.x + (b.x - a.x) * e, y: a.y + (b.y - a.y) * e + lift, z: a.z + (b.z - a.z) * e,
+      ox: 0, oy: wide ? H * .2 * e : H * fit.oy * e - H * .07 * (1 - e),
+      cY: Math.cos(yaw), sY: Math.sin(yaw), cP: Math.cos(pitch), sP: Math.sin(pitch)};
+  }
+
+  // ---------- рисование ----------
+  // шрифт меняется только когда другой: разбор строки шрифта в canvas дорогой
+  let lastFont = "";
+  function font(f){ if (f !== lastFont){ lastFont = f; g.font = f; g.textAlign = "center"; g.textBaseline = "middle"; } }
+  function poly(pts){ g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath(); }
+  // точки оси дороги на неподвижной сетке s = k·step: при движении камеры они не «плывут» по дороге,
+  // поэтому края на поворотах не дрожат. Считаются раз за кадр и общие для всех полос
+  const RS = {s0: 0, step: 1, n: 0, x: new Float64Array(4096), z: new Float64Array(4096), tx: new Float64Array(4096), tz: new Float64Array(4096)};
+  const LX = new Float64Array(4100), LY = new Float64Array(4100), RX = new Float64Array(4100), RY = new Float64Array(4100);
+  function sampleRoad(s0, s1, step){
+    RS.step = step; RS.s0 = Math.floor(s0 / step) * step;
+    RS.n = Math.min(4096, Math.floor((s1 - RS.s0) / step) + 2);
+    for (let i = 0; i < RS.n; i++){ const p = at(RS.s0 + i * step); RS.x[i] = p.x; RS.z[i] = p.z; RS.tx[i] = p.tx; RS.tz[i] = p.tz; }
+  }
+  function strip(a, b, off0, off1, color){
+    // полоса вдоль дороги между смещениями off0..off1 от оси; точки за камерой разрывают её на участки
+    if (b <= a) return;
+    const {cY, sY, cP, sP} = cam, cx = cam.x, cz = cam.z, cy = cam.y, hw = W / 2 + cam.ox, hh = H / 2 + cam.oy;
+    let n = 0;
+    g.fillStyle = color; g.beginPath();
+    const flush = () => {
+      if (n > 1){ g.moveTo(LX[0], LY[0]); for (let k = 1; k < n; k++) g.lineTo(LX[k], LY[k]); for (let k = n - 1; k >= 0; k--) g.lineTo(RX[k], RY[k]); g.closePath(); }
+      n = 0;
+    };
+    const put = (x, z, tx, tz) => {
+      const ax = x + tz * off0 - cx, az = z - tx * off0 - cz, a1 = ax * sY + az * cY, ac = a1 * cP + cy * sP;
+      const bx = x + tz * off1 - cx, bz = z - tx * off1 - cz, b1 = bx * sY + bz * cY, bc = b1 * cP + cy * sP;
+      if (ac < .8 || bc < .8){ flush(); return; }
+      LX[n] = hw + F * (ax * cY - az * sY) / ac; LY[n] = hh - F * (a1 * sP - cy * cP) / ac;
+      RX[n] = hw + F * (bx * cY - bz * sY) / bc; RY[n] = hh - F * (b1 * sP - cy * cP) / bc;
+      if (n < 4099) n++;
+    };
+    // концы полосы точные (границы уровней, место путника), внутри — точки сетки
+    let p = at(a); put(p.x, p.z, p.tx, p.tz);
+    const i0 = Math.max(0, Math.floor((a - RS.s0) / RS.step) + 1), i1 = Math.min(RS.n - 1, Math.ceil((b - RS.s0) / RS.step) - 1);
+    for (let i = i0; i <= i1; i++) put(RS.x[i], RS.z[i], RS.tx[i], RS.tz[i]);
+    p = at(b); put(p.x, p.z, p.tx, p.tz);
+    flush(); g.fill();
+  }
+  function drawGround(view, now){
+    const {s0, s1, mapMode} = view;
+    sampleRoad(s0, s1, view.step);
+    // поле точек: одна заливка на уровень вместо сотни мелких
+    const DP = [new Path2D(), new Path2D(), new Path2D()];
+    dots.forEach(o => {
+      if (o.born > now) return;
+      const gs = life(o, now);
+      if (gs < .03) return;
+      const rx = o.x - cam.x, rz = o.z - cam.z, z1 = rx * cam.sY + rz * cam.cY, zc = z1 * cam.cP + cam.y * cam.sP;
+      if (zc < 1 || zc > view.far) return;
+      const px = W / 2 + cam.ox + F * (rx * cam.cY - rz * cam.sY) / zc, py = H / 2 + cam.oy - F * (z1 * cam.sP - cam.y * cam.cP) / zc;
+      const r = Math.max(.6, F * o.r / zc) * gs, ry = Math.max(.5, r * clamp(cam.y / Math.hypot(cam.y, zc) * 1.4, .18, 1));
+      if (px < -r || px > W + r || py < -r || py > H + r) return;
+      DP[o.tier].moveTo(px + r, py); DP[o.tier].ellipse(px, py, r, ry, 0, 0, 7);
+    });
+    g.globalAlpha = .5;
+    DP.forEach((P, k) => { g.fillStyle = colors.tierSoft[k]; g.fill(P); });
+    g.globalAlpha = 1;
+    // обочины цветом уровня и асфальт
+    for (let k = 0; k < 3; k++){
+      const a = Math.max(s0, k ? stopD[gates[k]] : 0), b = Math.min(s1, k < 2 ? stopD[gates[k + 1]] : route.len);
+      strip(a, b, -RW - .55, RW + .55, colors.tierSoft[k]);
+    }
+    strip(s0, s1, -RW, RW, colors.road);
+    if (!mapMode){
+      // разметка
+      g.fillStyle = colors.dash; g.beginPath();
+      for (let s = Math.ceil(Math.max(s0, d - 30) / 7) * 7; s < s1; s += 7){
+        const q = [[s, -.16], [s + 3.2, -.16], [s + 3.2, .16], [s, .16]].map(([ss, o]) => { const p = at(ss); return proj(p.x + p.tz * o, 0, p.z - p.tx * o); });
+        if (q.some(p => p[2] < .8)) continue;
+        q.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath();
+      }
+      g.fill();
+    }
+    // на карте маршрут рисуется жирной линией, чтобы читался издалека
+    const m = clamp((ov - .4) / .4, 0, 1);
+    if (m > 0){
+      const line = (a, b, w, color, dash) => {
+        g.beginPath(); let started = false;
+        for (let s = a; s <= b + .001; s += 4){ const p = at(Math.min(s, b)), q = proj(p.x, 0, p.z); if (q[2] < 1) continue; started ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); started = true; }
+        g.lineWidth = w; g.strokeStyle = color; g.lineCap = "round"; g.lineJoin = "round"; g.setLineDash(dash || []); g.stroke(); g.setLineDash([]);
+      };
+      g.globalAlpha = m;
+      for (let k = 0; k < 3; k++) line(k ? stopD[gates[k]] : 0, k < 2 ? stopD[gates[k + 1]] : route.len, 12, TIER[k]);
+      line(0, route.len, 1.6, colors.bg, [5, 7]);
+      if (d > START) line(0, d, 5, CLAY);
+      g.globalAlpha = 1;
+    }
+    // пройденный путь
+    // ширина меняется плавно вместе с высотой камеры, без скачка на середине полёта
+    if (d > START - 30){
+      const w = .1 + 2.4 * ease(ov);
+      strip(Math.max(s0, 0), Math.min(s1, d), -w, w, CLAY);
+    }
+  }
+  function fogBand(alpha){
+    // туман к горизонту: дорога растворяется в фоне
+    const hy = H / 2 + cam.oy - F * (cam.sP / cam.cP);
+    if (hy < -H) return;
+    // выше горизонта — сплошная заливка (дёшево), градиент только в полосе под ним
+    const y0 = hy - 2, y1 = hy + H * .22;
+    g.globalAlpha = alpha;
+    if (y0 > 0){ g.fillStyle = colors.bg; g.fillRect(0, 0, W, Math.min(y0, H)); }
+    if (y0 < H){
+      const grd = g.createLinearGradient(0, y0, 0, y1);
+      grd.addColorStop(0, colors.bg); grd.addColorStop(1, colors.bg + "00");
+      g.fillStyle = grd; g.fillRect(0, Math.max(0, y0), W, Math.min(y1, H) - Math.max(0, y0));
+    }
+    g.globalAlpha = 1;
+  }
+
+  function collectTrees(view, now){
+    // проекция в одну строку без лишних массивов; на дороге перебираются только полосы рядом с камерой
+    const {cY, sY, cP, sP} = cam, cx = cam.x, cz = cam.z, cy = cam.y, hw = W / 2 + cam.ox, hh = H / 2 + cam.oy;
+    const grow = 1 + .8 * ov, far = view.near ? FOG : view.far, tiny = view.near ? null : colors.tree.map(() => new Path2D());
+    const tinyR = ovMv ? 5 : 3.5;     // в полёте порог выше: ствол у таких деревьев всё равно тоньше пикселя
+    let b0 = 0, b1 = tb.length - 1;
+    if (view.near){ b0 = Math.max(0, (cz - far - tz0) / BZ | 0); b1 = Math.min(b1, (cz + far - tz0) / BZ | 0); }
+    for (let b = b0; b <= b1; b++){
+      const L = tb[b];
+      for (let i = 0; i < L.length; i++){
+        const t = L[i];
+        if (t.born > now) continue;                       // ещё не посажено
+        const gs = life(t, now);
+        if (gs < .03) continue;
+        const rx = t.x - cx, rz = t.z - cz, z1 = rx * sY + rz * cY, zc = z1 * cP + cy * sP;
+        if (zc < 1.2 || zc > far) continue;
+        const k = F / zc * grow * gs, sx = hw + F * (rx * cY - rz * sY) / zc, sy = hh - F * (z1 * sP - cy * cP) / zc, r = t.r * k;
+        if (sx < -2 * r || sx > W + 2 * r || sy < 0 || sy - t.top * r > H) continue;
+        // над картой мелкие деревья — просто кроны-точки, одна заливка на цвет
+        if (tiny && r < tinyR){ const q = Math.max(.75, t.o ? r * 1.1 : r), y = sy - TR[t.b] * r, P = tiny[t.c]; P.moveTo(sx + q, y); t.o ? P.ellipse(sx, y, q * .78, q * 1.35, 0, 0, 7) : P.arc(sx, y, q, 0, 7); continue; }
+        t.zc = zc; t.k = k; t.sx = sx; t.sy = sy; items.push(t);
+      }
+    }
+    // совсем мелкие деревья вдали: одна заливка на цвет, без сортировки
+    if (tiny) tiny.forEach((P, c) => { g.fillStyle = colors.tree[c]; g.fill(P); });
+  }
+  function billboards(view, now, withTrees = true, withMarks = true){
+    items.length = 0;
+    if (withTrees && gi) collectTrees(view, now);
+    const vis = (x, z) => { const p = proj(x, 0, z); return p[2] > 1.2 && p[2] < view.far ? p : null; };
+    if (withMarks){
+      stops.forEach((s, i) => {
+        const P = at(stopD[i]);
+        if (s.kind === "gate" || s.kind === "end"){
+          const L = vis(P.x + P.tz * (RW + 1.4), P.z - P.tx * (RW + 1.4)), R = vis(P.x - P.tz * (RW + 1.4), P.z + P.tx * (RW + 1.4));
+          if (L && R){ const p = L[2] > R[2] ? L : R; items.push({o: {kind: "gate", i, s, P}, p, L, R, zc: p[2]}); }
+        } else {
+          const side = i % 2 ? -1 : 1, po = pinOff(), x = P.x + P.tz * po * side, z = P.z - P.tx * po * side, p = vis(x, z);
+          if (p) items.push({o: {kind: "pin", i, s, x, z}, p, zc: p[2]});
+        }
+      });
+      const me = at(d), mp = vis(me.x, me.z); if (mp) items.push({o: {kind: "me"}, p: mp, zc: mp[2]});
+    }
+    items.sort((a, b) => b.zc - a.zc);
+    let ga = -1;
+    const shown = [];                                  // метки, уже нарисованные в этом кадре
+    stops.forEach(s => { s.occ = false; });
+    for (const it of items){
+      if (it.T){
+        // деревья: туман к горизонту и плавное исчезновение у самой камеры; прозрачность меняется, только когда другая
+        const al = view.near ? Math.min(1, (FOG - it.zc) / 110, (it.zc - 3) / 4) : 1;
+        if (al <= 0) continue;
+        if (al !== ga){ ga = al; g.globalAlpha = al; }
+        drawTree(it);
+        // дерево ближе метки и закрывает её головку — подпись метки прячется
+        if (al > .5) for (const q of shown) if (!q.occ){
+          const r = it.r * it.k, rx = it.o ? r * .78 : r, ry = it.o ? r * 1.35 : r;
+          const dx = (q.hx - it.sx) / rx, dy = (q.hy - (it.sy - TR[it.b] * r)) / ry;
+          if (dx * dx + dy * dy < 1) q.occ = true;
+        }
+        continue;
+      }
+      ga = -1;
+      const {o, p} = it, k = F / p[2];
+      // у земли дальние метки и ворота растворяются в тумане вместе с дорогой
+      g.globalAlpha = view.fade ? clamp((view.far - 40 - p[2]) / 110, 0, 1) : 1;
+      if (g.globalAlpha <= 0){ if (o.kind === "pin") o.s.occ = true; continue; }
+      if (o.kind === "pin"){ drawPin(o, p, k, now); shown.push(o.s); }
+      else if (o.kind === "gate") drawGate(o, it, now);
+      else drawMe(p, k, now);
+    }
+    g.globalAlpha = 1;
+  }
+  function drawTree(t){
+    // ствол и крона фигурами: в Firefox это в 3–4 раза быстрее, чем масштабировать картинку из атласа,
+    // и у камеры деревья остаются чёткими
+    const r = t.r * t.k, cy = t.sy - TR[t.b] * r;
+    if (t.b){ const w = Math.max(.7, r * .15); g.fillStyle = colors.line; g.fillRect(t.sx - w / 2, cy, w, t.sy - cy); }
+    g.fillStyle = colors.tree[t.c]; g.beginPath(); g.ellipse(t.sx, cy, t.o ? r * .78 : r, t.o ? r * 1.35 : r, 0, 0, 7); g.fill();
+  }
+  function drawPin(o, p, k, now){
+    const active = o.i === cur, done = o.i < cur, c = TIER[o.s.tier];
+    const sc = o.s.sc = (o.s.sc ?? 1) + ((active ? 1.45 : 1) - (o.s.sc ?? 1)) * .12;
+    const u = k * sc, bob = active && !reduce() ? Math.sin(now / 380) * .25 * u : 0;
+    const x = p[0], y = p[1] - bob, cy = y - 3.3 * u, r = 1.25 * u;
+    o.s.hx = x; o.s.hy = r < 2.5 ? y : cy;           // головка метки: по ней проверяется, закрыта ли она деревом
+    if (r < 2.5){ g.fillStyle = colors.bg; g.beginPath(); g.arc(x, y, 4.5, 0, 7); g.fill(); g.fillStyle = done ? CLAY : c; g.beginPath(); g.arc(x, y, 3, 0, 7); g.fill(); return; }
+    // прозрачность тени восстанавливается сохранённым значением, а не делением: Firefox хранит её
+    // с низкой точностью, после деления выходит чуть больше 1, значение игнорируется и метка остаётся прозрачной
+    const a0 = g.globalAlpha;
+    g.fillStyle = "#000"; g.globalAlpha = a0 * .14; g.beginPath(); g.ellipse(p[0], p[1], r * .9, r * .28, 0, 0, 7); g.fill(); g.globalAlpha = a0;
+    g.fillStyle = c;
+    g.beginPath(); g.moveTo(x, y);
+    g.bezierCurveTo(x - r * .55, cy + r * 1.35, x - r, cy + r * .6, x - r, cy);
+    g.arc(x, cy, r, Math.PI, 0); g.bezierCurveTo(x + r, cy + r * .6, x + r * .55, cy + r * 1.35, x, y); g.fill();
+    g.fillStyle = "#fff"; g.beginPath(); g.arc(x, cy, r * .66, 0, 7); g.fill();
+    if (r > 6){
+      g.fillStyle = c; font(`600 ${Math.round(r * .62)}px "JetBrains Mono", monospace`);
+      g.fillText(done ? "✓" : String(o.s.g).padStart(2, "0"), x, cy + r * .04);
+    }
+    if (active){
+      const ph = (now / 1300) % 1; g.strokeStyle = c; g.lineWidth = 2; g.globalAlpha *= 1 - ph;
+      g.beginPath(); g.ellipse(p[0], p[1], r * (1 + ph * 2), r * (1 + ph * 2) * .3, 0, 0, 7); g.stroke(); g.globalAlpha = 1;
+    }
+  }
+  function drawGate(o, it, now){
+    const {L, R} = it, c = o.s.kind === "end" ? CLAY : TIER[o.s.tier], kL = F / L[2], kR = F / R[2];
+    const top = (P, k, hh) => [P[0], P[1] - hh * k];
+    const H1 = 9.5, H0 = 6.8;
+    g.strokeStyle = colors.fg; g.lineWidth = Math.max(1, .32 * Math.min(kL, kR));
+    [[L, kL], [R, kR]].forEach(([P, k]) => { g.beginPath(); g.moveTo(P[0], P[1]); g.lineTo(...top(P, k, H1)); g.stroke(); });
+    const a = top(L, kL, H1), b = top(R, kR, H1), c2 = top(R, kR, H0), d2 = top(L, kL, H0);
+    g.fillStyle = c; poly([a, b, c2, d2]); g.fill();
+    const k = (kL + kR) / 2, mx = (a[0] + b[0] + c2[0] + d2[0]) / 4, my = (a[1] + b[1] + c2[1] + d2[1]) / 4;
+    const label = o.s.kind === "end" ? "Финиш" : o.s.title;
+    const fs = Math.min(Math.abs(b[0] - a[0]) * .5 / Math.max(1, label.length * .32), (H1 - H0) * k * .62);
+    if (fs > 5){
+      g.fillStyle = "#fff"; font(`italic 400 ${Math.round(fs)}px "Source Serif 4", Georgia, serif`);
+      g.fillText(label, mx, my + fs * .06);
+    }
+  }
+  function drawMe(p, k, now){
+    const r = clamp(.78 * k, 5.5, 20), ph = (now / 1100) % 1;
+    g.fillStyle = CLAY; g.globalAlpha = .25 * (1 - ph);
+    g.beginPath(); g.ellipse(p[0], p[1], r * (1.4 + ph * 2.4), r * (1.4 + ph * 2.4) * .32, 0, 0, 7); g.fill();
+    g.globalAlpha = 1;
+    const y = p[1] - (reduce() ? 0 : Math.abs(Math.sin(now / 260)) * r * .25);
+    g.fillStyle = "#fff"; g.beginPath(); g.arc(p[0], y - r * 1.1, r * 1.08, 0, 7); g.fill();
+    g.fillStyle = CLAY; g.beginPath(); g.arc(p[0], y - r * 1.1, r * .78, 0, 7); g.fill();
+  }
+
+  // ---------- подписи ----------
+  function placeLabels(view){
+    const labs = el._labs;
+    stops.forEach((s, i) => {
+      const lab = labs[i], P = at(stopD[i]);
+      let x, z, hh;
+      if (s.kind === "mod"){ const side = i % 2 ? -1 : 1, po = pinOff(); x = P.x + P.tz * po * side; z = P.z - P.tx * po * side; hh = 6.4 * (s.sc ?? 1); }
+      else { x = P.x; z = P.z; hh = 11; }
+      const p = proj(x, hh, z);
+      let a = 0;
+      if (s.kind === "mod") a = view.mapMode || p[2] > 190 || s.occ ? 0 : 1;
+      else a = view.mapMode ? clamp(ov * 1.6 - .6, 0, 1) : 0;
+      if (p[2] < 2) a = 0;
+      // в DOM пишется только то, что изменилось
+      const op = a.toFixed(2); if (lab._op !== op){ lab._op = op; lab.style.opacity = op; }
+      if (a > 0){ const tr = `translate(${p[0].toFixed(1)}px,${p[1].toFixed(1)}px) translate(-50%,-100%)`; if (lab._tr !== tr){ lab._tr = tr; lab.style.transform = tr; } }
+      if (lab._on !== (i === cur)){ lab._on = i === cur; lab.classList.toggle("on", lab._on); }
+    });
+  }
+
+  // ---------- кадр ----------
+  function frame(now){
+    raf = requestAnimationFrame(frame);
+    const dt = Math.min(.05, (now - (lastNow || now)) / 1000); lastNow = now;
+    if (mv){
+      const t = clamp((now - mv.t0) / mv.dur, 0, 1);
+      d = mv.from + (mv.to - mv.from) * ease(t);
+      if (!mv.swapped && t > .5){ mv.swapped = true; showCard(mv.i); }
+      if (t === 1){ const i = mv.i, fwd = mv.to > mv.from; mv = null; arrive(i, fwd); }
+    }
+    if (ovMv){
+      const t = clamp((now - ovMv.t0) / ovMv.dur, 0, 1);
+      ov = ovMv.from + (ovMv.to - ovMv.from) * t;
+      if (ovMv.dTo !== undefined) d = ovMv.dFrom + (ovMv.dTo - ovMv.dFrom) * ease(t);
+      if (t === 1){ const cb = ovMv.cb; ovMv = null; cb && cb(); }
+    }
+    if (started) growTo(d + GROW_AHEAD, now);
+    setCam(dt);
+    const T = clamp(tierAt(d + 14), 0, 2);
+    // near — камера на дороге (туман, разметка); mapMode — камера над картой (подписи уровней)
+    const mapMode = ov > .45, near = ov < .02;
+    // дальность: над картой бесконечная, к земле плавно сходится к туману (FOG + 40), без скачка при посадке
+    const kf = clamp(ov / .5, 0, 1), far = ov >= .5 ? 1e9 : FOG + 40 + kf * kf * kf * 6000;
+    const view = {s0: near ? Math.max(0, d - BACK - 2) : 0, s1: Math.min(route.len, d + far - 20), step: 1, far, fade: ov < .5, mapMode, near};
+    const scene = () => {
+      // фон (оттенок текущего уровня сверху) — CSS-градиент под холстом: браузер рисует его один раз,
+      // а холст только очищается. Полноэкранная заливка градиентом в каждом кадре дорогая, особенно в Firefox
+      if (el._tg !== T){ el._tg = T; el.style.setProperty("--tg", colors.tierGround[T]); }
+      g.clearRect(0, 0, W, H);
+      drawGround(view, now);
+      if (ov < .3) fogBand(1 - ov / .3);
+    };
+    if (ov === 1 && !ovMv && now >= growEnd){
+      // карта неподвижна и лес дорос: земля и лес рисуются один раз, дальше кадр только копируется
+      const key = [W, H, DPR, d, T, colors.bg, gi, growEnd].join();
+      if (mapCache.key !== key){
+        const cv2 = mapCache.cv || (mapCache.cv = document.createElement("canvas")), g0 = g;
+        cv2.width = cv.width; cv2.height = cv.height;
+        g = cv2.getContext("2d"); g.setTransform(DPR, 0, 0, DPR, 0, 0); lastFont = "";
+        scene(); billboards(view, now, true, false);
+        g = g0; mapCache.key = key; lastFont = "";
+      }
+      g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cv.width, cv.height); g.drawImage(mapCache.cv, 0, 0); g.setTransform(DPR, 0, 0, DPR, 0, 0);
+      billboards(view, now, false, true);
+    } else {
+      scene();
+      billboards(view, now);
+    }
+    placeLabels(view);
+    drawConfetti(dt);
+    progress();
+  }
+
+  // ---------- конфетти ----------
+  function burst(c){
+    if (reduce()) return;
+    const cols = [c, CLAY, colors.fg, mix(c, "#ffffff", .4)];
+    for (let i = 0; i < 160; i++){
+      const a = -Math.PI / 2 + (rnd() - .5) * 2.2, v = 380 + rnd() * 620;
+      confetti.push({x: W / 2 + (rnd() - .5) * 120, y: H * .52, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: rnd() * 6, vr: (rnd() - .5) * 14, w: 5 + rnd() * 7, h: 3 + rnd() * 5, c: cols[i % cols.length], life: 1.8 + rnd() * 1.2});
+    }
+  }
+  function drawConfetti(dt){
+    if (!confetti.length) return;
+    confetti = confetti.filter(p => (p.life -= dt) > 0);
+    confetti.forEach(p => {
+      p.vy += 900 * dt; p.vx *= Math.pow(.25, dt); p.vy *= Math.pow(.6, dt); p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.vr * dt;
+      g.save(); g.globalAlpha = clamp(p.life / .6, 0, 1); g.translate(p.x, p.y); g.rotate(p.r); g.scale(1, Math.cos(p.r * 1.7));
+      g.fillStyle = p.c; g.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); g.restore();
+    });
+  }
+
+  // ---------- интерфейс ----------
+  function progress(){
+    const a = stopD[0], z = stopD.at(-1);
+    el._segs.forEach((seg, k) => {
+      const s0 = stopD[gates[k]], s1 = k < 2 ? stopD[gates[k + 1]] : z;
+      const f = (clamp((d - s0) / (s1 - s0), 0, 1) * 100).toFixed(2) + "%", on = tierAt(d + 14) === k && ov < .5;
+      if (seg._f !== f){ seg._f = f; seg.style.setProperty("--f", f); }
+      if (seg._on !== on){ seg._on = on; seg.classList.toggle("on", on); }
+    });
+    const s = stops[cur];
+    const txt = !s ? "" : s.kind === "mod" ? `Модуль ${String(s.g).padStart(2, "0")} / ${modCount}` : s.kind === "gate" ? `Уровень ${s.tier + 1} / 3` : "Финиш";
+    if (el._count.textContent !== txt) el._count.textContent = txt;
+  }
+
+  const esc2 = s => esc(String(s));
+  function showCard(i){
+    const card = el.querySelector(".t-card"), s = stops[i];
+    const fill = () => {
+      const c = s.kind === "end" ? CLAY : TIER[s.tier];
+      card.style.setProperty("--c", c);
+      const chips = list => `<div class="ch">${list.map((x, k) => `<i style="--i:${k}">${esc2(x)}</i>`).join("")}</div>`;
+      const passed = stops.slice(0, i + 1).filter(x => x.kind === "mod").length;
+      const foot = `<div class="ft"><span>${passed} / ${modCount}</span><span class="mini" style="--f:${passed / modCount * 100}%"><i></i></span><span>модулей</span></div>`;
+      if (s.kind === "gate") card.innerHTML = `<span class="eb">Уровень ${s.tier + 1} из 3 · ${esc2(s.fmt)}</span><h3><em>${esc2(s.title)}</em></h3><p class="ds">${esc2(s.desc)}</p><span class="lb">Впереди на этом уровне</span>${chips(s.mods)}${foot}`;
+      else if (s.kind === "mod") card.innerHTML = `<span class="eb">${esc2(PLAN.tiers[s.tier].name)} · модуль ${s.n} из ${s.of}${s.beta ? " · бета" : ""}</span><h3>${esc2(s.title)}</h3><p class="ds">${esc2(s.desc)}</p><span class="lb">Изучаем</span>${chips(s.topics)}${foot}`;
+      else card.innerHTML = `<span class="eb">Финиш</span><h3>Весь курс <em>пройден</em></h3><p class="ds">${esc2(s.desc)}</p>${chips(PLAN.tiers.map(t => t.name + " ✓"))}${foot}`;
+      card.classList.remove("out", "hide");
+    };
+    if (card.classList.contains("hide")) return fill();
+    card.classList.add("out"); setTimeout(fill, 260);
+  }
+
+  function arrive(i, fwd){
+    cur = i;
+    const s = stops[i];
+    el.querySelector(".bk").disabled = i <= 0;
+    el.querySelector(".go .lbl").textContent = i >= stops.length - 1 ? "Посмотреть весь путь" : "Вперёд";
+    if (fwd && (s.kind === "gate" || s.kind === "end")) celebrate(s);
+    if (pending !== null){ const n = pending; pending = null; go(n); }
+  }
+  function celebrate(s){
+    const box = el.querySelector(".t-cele"), c = s.kind === "end" ? CLAY : TIER[s.tier];
+    const word = s.kind === "end" ? "Финиш" : s.title;
+    box.style.setProperty("--c", c);
+    box.innerHTML = `<span class="k">${s.kind === "end" ? "Весь курс пройден" : `Уровень ${s.tier + 1} из 3`}</span><span class="w">${[...word].map((ch, k) => `<span style="--i:${k}">${ch === " " ? "&nbsp;" : esc2(ch)}</span>`).join("")}</span>`;
+    box.hidden = false;
+    if (!(s.kind === "gate" && s.tier === 0)) burst(c);     // на старте с Lite без конфетти
+    clearTimeout(box._t); box._t = setTimeout(() => { box.hidden = true; }, 2600);
+  }
+
+  function go(i){
+    if (i < 0 || i >= stops.length) return;
+    if (ov > .01 || ovMv) return dive(i);
+    if (mv){ pending = i; return; }
+    const from = d, to = stopD[i] - (stops[i].kind === "mod" ? 13 : 13);
+    if (Math.abs(to - from) < .01){ showCard(i); arrive(i, false); return; }
+    mv = {from, to, i, t0: performance.now(), dur: reduce() ? 1 : clamp(1100 + Math.abs(to - from) * 7, 1100, 3600), swapped: false};
+  }
+  // с карты вниз, на дорогу
+  function dive(i){
+    el.querySelector(".t-intro").classList.add("gone"); el.classList.remove("intro");
+    yawS = null; cur = -1; replant();
+    // лес и точки начинают расти, только когда камера опустилась на дорогу
+    ovMv = {from: ov, to: 0, dFrom: d, dTo: stopD[i] - 13, t0: performance.now(), dur: reduce() ? 1 : 2600, cb: () => {
+      started = true; growTo(d + GROW_AHEAD, performance.now()); showCard(i); arrive(i, true);
+    }};
+    el.querySelector(".t-top").style.opacity = 1;
+  }
+  // с дороги вверх, на карту
+  function rise(){
+    el.querySelector(".t-card").classList.add("hide");
+    replant();                                   // в конце пути — пустая дорога
+    // текст итога ставится сразу (пока скрыт), чтобы камера летела уже к месту карты под ним
+    const intro = el.querySelector(".t-intro");
+    intro.innerHTML = introHTML(true); fitMap();
+    ovMv = {from: ov, to: 1, t0: performance.now(), dur: reduce() ? 1 : 2600, cb: () => {
+      intro.classList.remove("gone"); el.classList.add("intro");
+    }};
+  }
+  // шапка с текстом и блок выбора: уровни (цвет дороги, название, число модулей) и главная кнопка
+  const introHTML = done => `<div class="t-head">${done
+      ? `<span class="k">Весь путь пройден</span><h2>Три уровня. <em>Одна дорога</em></h2><p>${modCount} модулей от первого промпта до своего AI‑агентства.<span class="more"> Выбери уровень, чтобы проехать его ещё раз.</span></p>`
+      : `<span class="k">Курс целиком</span><h2>Одна дорога. <em>Три уровня</em></h2><p>${modCount} модулей подряд, от первого промпта до своего AI‑агентства.<span class="more"> Жми «Поехали»: вокруг дороги начнёт расти лес, остановка за остановкой.</span></p>`}</div>
+    <div class="t-sheet"><button class="go" type="button" data-go="0"><span class="tri"></span>${done ? "Проехать заново" : "Поехали"}</button>${tierQuick()}</div>`;
+  const tierQuick = () => `<div class="tiers-q">${PLAN.tiers.map((t, k) => `<button type="button" data-go="${gates[k]}" style="--c:${TIER[k]}"><i></i><b>${esc2(t.name)}</b><span>${t.modules.length} ${plural(t.modules.length, "модуль", "модуля", "модулей")}</span><em class="arr">→</em></button>`).join("")}</div>`;
+
+  function resize(){
+    W = el.clientWidth; H = el.clientHeight;
+    // плотность пикселей до 2, но холст не больше ~3 Мп: на ретине и больших экранах это главная нагрузка
+    DPR = Math.max(1, Math.min(devicePixelRatio || 1, 2, Math.sqrt(3e6 / (W * H))));
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); lastFont = "";
+    g.setTransform(DPR, 0, 0, DPR, 0, 0);
+    FOV = (W <= 760 ? 66 : 50) * Math.PI / 180;     // на узком экране угол шире, чтобы метки у обочины попадали в кадр
+    F = (H / 2) / Math.tan(FOV / 2);
+    mapCache.key = "";
+    if (route) fitMap();
+  }
+
+  let closeT = 0;
+  function open(startTier){
+    clearTimeout(closeT);
+    if (!el) mount();
+    readTheme();
+    if (!route) build(); else replant();
+    d = START; cur = -1; ov = 1; mv = null; ovMv = null; pending = null; yawS = null; confetti = []; growEnd = 0;
+    const intro = el.querySelector(".t-intro");
+    intro.innerHTML = introHTML(false); intro.classList.remove("gone"); el.classList.add("intro");
+    el.querySelector(".t-card").classList.add("hide");
+    el.querySelector(".t-cele").hidden = true;
+    el.querySelector(".bk").disabled = true;
+    el.querySelector(".go .lbl").textContent = "Поехали";
+    el.hidden = false;
+    document.documentElement.classList.add("trip-open");
+    document.documentElement.style.overflow = "hidden";
+    resize();
+    lastNow = 0; cancelAnimationFrame(raf); raf = requestAnimationFrame(frame);
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("show")));
+    if (startTier > 0) setTimeout(() => go(gates[startTier]), 700);
+  }
+  function build(){
+    buildStops(); buildRoute(); buildDecor();
+    el.querySelector(".t-labs").innerHTML = stops.map((s, i) => {
+      const c = s.kind === "end" ? CLAY : TIER[s.tier];
+      if (s.kind === "mod") return `<div class="t-lab" style="--c:${c}"><b>${String(s.g).padStart(2, "0")} · ${esc2(PLAN.tiers[s.tier].name)}</b><span>${esc2(s.title)}</span></div>`;
+      return `<div class="t-lab gate" data-go="${i}" style="--c:${c}"><b>${s.kind === "end" ? "Конец пути" : "Уровень " + (s.tier + 1)}</b><span>${esc2(s.kind === "end" ? "Финиш" : s.title)}</span></div>`;
+    }).join("");
+    el._labs = [...el.querySelectorAll(".t-lab")];
+    el.querySelector(".t-prog").innerHTML = PLAN.tiers.map((t, k) => {
+      const s0 = stopD[gates[k]], s1 = k < 2 ? stopD[gates[k + 1]] : stopD.at(-1);
+      return `<div class="t-seg" data-go="${gates[k]}" style="--c:${TIER[k]};--w:${s1 - s0}"><div class="bar"><i></i></div><span>${esc2(t.name)}</span></div>`;
+    }).join("");
+    el._segs = [...el.querySelectorAll(".t-seg")];
+    el._count = el.querySelector(".t-count");
+  }
+  function close(){
+    el.classList.remove("show");
+    document.documentElement.classList.remove("trip-open");
+    document.documentElement.style.overflow = "";
+    closeT = setTimeout(() => { el.hidden = true; cancelAnimationFrame(raf); }, 600);
+  }
+  const next = () => { if (ov > .5 && !ovMv) return go(0); if (cur >= stops.length - 1 && !mv) return rise(); go((pending ?? (mv ? mv.i : cur)) + 1); };
+  const prev = () => { if (ov > .5) return; go((pending ?? (mv ? mv.i : cur)) - 1); };
+
+  function mount(){
+    el = document.createElement("div");
+    el.id = "trip"; el.hidden = true;
+    el.innerHTML = `<canvas></canvas><div class="t-veil"></div><div class="t-labs"></div>
+      <div class="t-top"><button class="t-back" type="button">← Тарифы</button><div class="t-prog"></div><span class="t-count"></span></div>
+      <div class="t-intro"></div>
+      <aside class="t-card hide" aria-live="polite"></aside>
+      <div class="t-nav"><div class="row"><button class="bk" type="button">Назад</button><button class="go" type="button"><span class="tri"></span><span class="lbl">Вперёд</span></button></div><small>Пробел, → или колесо мыши</small></div>
+      <div class="t-cele" hidden></div>`;
+    document.body.appendChild(el);
+    cv = el.querySelector("canvas"); g = cv.getContext("2d");
+    el.addEventListener("click", e => {
+      if (e.target.closest(".t-back")) return close();
+      const j = e.target.closest("[data-go]"); if (j) return go(+j.dataset.go);
+      if (e.target.closest(".t-nav .go")) return next();
+      if (e.target.closest(".t-nav .bk")) return prev();
+    });
+    addEventListener("keydown", e => {
+      if (el.hidden) return;
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === " "){ e.preventDefault(); next(); }
+      else if (e.key === "ArrowLeft" || e.key === "ArrowDown"){ e.preventDefault(); prev(); }
+    });
+    let wheelAt = 0, acc = 0;
+    el.addEventListener("wheel", e => {
+      e.preventDefault(); acc += e.deltaY;
+      const now = performance.now();
+      if (Math.abs(acc) > 40 && now - wheelAt > 650){ wheelAt = now; acc > 0 ? next() : prev(); acc = 0; }
+    }, {passive: false});
+    let ty = null;
+    el.addEventListener("touchstart", e => { ty = e.touches[0].clientY; }, {passive: true});
+    el.addEventListener("touchend", e => {
+      if (ty === null || e.target.closest("button, .t-card")) { ty = null; return; }
+      const dy = e.changedTouches[0].clientY - ty; ty = null;
+      if (dy < -45) next(); else if (dy > 45) prev();
+    });
+    addEventListener("resize", () => { if (!el.hidden) resize(); });
+  }
+
+  return {open, close};
+})();
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-trip]");
+  if (b) Trip.open(+b.dataset.trip);
+});
+
+</script>
+</body>
+</html>
